@@ -3,20 +3,81 @@
 #include <stdint.h>
 #include <ctype.h>
 
-static void perror_debug(const char *msg)
+static void perror_debug(const char * function, const char *msg)
 {
     char buffer[256] = {0};
     // Prevents overflow, and adds string null termination- how? TODO
-    snprintf(buffer, sizeof(buffer), "[main.c read_file_byte_by_byte] %s", msg); 
+    snprintf(buffer, sizeof(buffer), "[%s] %s", function, msg); 
     perror(buffer);
+}
+
+
+
+static void read_file_utf8(const char *path)
+{
+
+    //TODO
+}
+
+static void read_file_ascii(const char *path)
+{
+
+    //TODO
+}
+
+static void read_file_per_hex(const char *path)
+{
+
+    //TODO
 }
 
 static void read_file_byte_by_byte(const char *path)
 {
     FILE *fp = fopen(path, "rb");
     if (fp == NULL) {
-        perror_debug("fopen failed");
+        perror_debug("read_file_byte_by_byte", "fopen failed");
         return;
+    }
+
+// TODO
+
+    fclose(fp);
+}
+
+
+static void read_file_fread(const char *path)
+{
+
+    //TODO
+}
+
+
+
+static void read_file_fscans(const char *path)
+{
+
+    //TODO
+}
+
+
+static void read_file_fgetc(const char *path)
+{
+
+    //TODO
+}
+
+static void read_file_fgets(const char *path)
+{
+    FILE *fp = fopen(path, "r");
+    if (fp == NULL) {
+        perror_debug("read_file_fgets", "fopen failed");
+        return;
+    }
+
+    char buffer[64];
+
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        printf("%s", buffer);
     }
 
     fclose(fp);
