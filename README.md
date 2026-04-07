@@ -27,13 +27,27 @@ Components
 - Groups + datasets (basic)
 - B-tree (symbol table or chunk index)
 
+General setup for tools:
+- Use python `h5py` to generate minimal files 
+- Use `h5dump` to view these files for debugging purposes
+
+Superblock header should include information:
+- about hdf5 file version
+- Contain a header: `\x89HDF\r\n\x1a\n`
+
 ### SUBGOAL 1
 
 MVP of HDF5 parser:
 
-- Read Superblock
+- Read File as bytes
+- Read File as Superblock
 - Read object headers
 - Leaves and branches OOP system
 - Navigate file system
+
+
+How to run the C code for parsing:
+- TODO
+- 
 
 Example dataset taken from `@sushanttwayana` on [kaggle](https://www.kaggle.com/datasets/sushanttwayana/birds-final-dataset-hdf5?resource=download-directory)
