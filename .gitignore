@@ -1,0 +1,10 @@
+
+# env
+.env
+
+# Python related
+.venv/
+venv/
+
+# data
+example_data/*
