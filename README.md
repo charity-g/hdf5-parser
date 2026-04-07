@@ -5,8 +5,8 @@ HDF5 is a recursive file format, used to compress and organize large amounts of 
 ## Goals:
 
 - Learn the structure of HDF5 file formats
-- Use the C language in a recursive manner to parse HDF5
 - Handle Parse both UTF-8 and ASCII 
+- Use the C language in a recursive manner to parse HDF5
 - Implement a B+ Tree to index table objects
 - Learn how to write unit tests in C
 - Learn how to benchmark my own custom parsers against hdf5 C API
@@ -37,17 +37,38 @@ Superblock header should include information:
 
 ### SUBGOAL 1
 
-MVP of HDF5 parser:
 
-- Read File as bytes
+ascii + utf8
+- read C files in a variety of different ways
+- Read C files as bytes
+- Read C files in ASCII
+- Read C files in UTF8
+- On-the-fly figure out if file is ascii or utf-8 encoded
+- Read dynamically
+
+### SUBGOAL 2
+
+MVP of HDF5 parser:
 - Read File as Superblock
-- Read object headers
 - Leaves and branches OOP system
+- Read object headers, attributes etc
 - Navigate file system
 
 
-How to run the C code for parsing:
-- TODO
-- 
+### SUBGOAL 2
 
-Example dataset taken from `@sushanttwayana` on [kaggle](https://www.kaggle.com/datasets/sushanttwayana/birds-final-dataset-hdf5?resource=download-directory)
+## Developer
+
+1) Fork this repository
+2) Generate and/or download example h5 data
+    - Generate h5 data through python
+    - Example complex h5 dataset taken from `@sushanttwayana` on [kaggle](https://www.kaggle.com/datasets/sushanttwayana/birds-final-dataset-hdf5?resource=download-directory)
+3) Implement the subgoals
+4) benchmark compare to mine and official HDF5 C API
+ 
+How to run the C code for parsing:
+- Compile C function
+    - requires compiler installe, ie: gcc
+    - `gcc main.c -o main`
+- Run compiled object file with command line argument
+
