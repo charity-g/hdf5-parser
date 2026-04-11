@@ -2,16 +2,32 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <ctype.h>
+#include <errno.h> // Include errno for error handling
 
 static void perror_debug(const char * function, const char *msg)
 {
     char buffer[256] = {0};
-    // Prevents overflow, and adds string null termination- how? TODO
-    snprintf(buffer, sizeof(buffer), "[%s] %s", function, msg); 
+    snprintf(buffer, sizeof(buffer), "[%s] %s", function, msg);
+
+    if (errno == 0) {
+        errno = EINVAL; // Set a default error code if errno is not set
+    }
+
     perror(buffer);
 }
 
+static FILE * safe_fopen(const char * path) 
+{
+    FILE * fp = fopen(path, "r");
+    if (fp == NULL) {
+        perror_debug("read_file_fgets", "fopen failed");
+        return NULL;
+        // exit instead whatever
+    }
+    return fp;
+}
 
+// =================================
 
 static void read_file_utf8(const char *path)
 {
@@ -41,6 +57,7 @@ static void read_file_byte_by_byte(const char *path)
 
 // TODO
 
+
     fclose(fp);
 }
 
@@ -62,18 +79,13 @@ static void read_file_fscans(const char *path)
 
 static void read_file_fgetc(const char *path)
 {
-
+    
     //TODO
 }
 
 static void read_file_fgets(const char *path)
 {
-    FILE *fp = fopen(path, "r");
-    if (fp == NULL) {
-        perror_debug("read_file_fgets", "fopen failed");
-        return;
-    }
-
+    FILE *fp = safe_fopen(path);
     char buffer[64];
 
     while (fgets(buffer, sizeof(buffer), fp) != NULL) {
@@ -89,7 +101,9 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Usage: %s <file>\n", argv[0]);
         return EXIT_FAILURE;
     }
-
-    read_file_byte_by_byte(argv[1]);
+    
+    // read_file_fgets(argv[1]);
+    read_file_fgetc(argv[1]);
+    // read_file_byte_by_byte(argv[1]);
     return EXIT_SUCCESS;
 }

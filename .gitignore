@@ -8,3 +8,7 @@ venv/
 
 # data
 example_data/*
+
+# C executables
+parser/*.exe
+*.exe
