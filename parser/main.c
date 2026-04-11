@@ -79,8 +79,15 @@ static void read_file_fscans(const char *path)
 
 static void read_file_fgetc(const char *path)
 {
+    FILE * fp = safe_fopen(path);
+    char buffer[64];
     
-    //TODO
+    int res = fgetc(fp);
+    while (res > 0) {
+        printf("%i-", res);
+        printf("%c \n", res);
+        res = fgetc(fp);
+    }
 }
 
 static void read_file_fgets(const char *path)
@@ -88,8 +95,11 @@ static void read_file_fgets(const char *path)
     FILE *fp = safe_fopen(path);
     char buffer[64];
 
+    int i = 0;
     while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        printf("Buffer %i: ", i);
         printf("%s", buffer);
+        i++;
     }
 
     fclose(fp);
@@ -103,7 +113,7 @@ int main(int argc, char *argv[])
     }
     
     // read_file_fgets(argv[1]);
-    read_file_fgetc(argv[1]);
+    // read_file_fgetc(argv[1]);
     // read_file_byte_by_byte(argv[1]);
     return EXIT_SUCCESS;
 }
