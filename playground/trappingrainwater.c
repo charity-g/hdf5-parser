@@ -1,8 +1,20 @@
+// 20260412
 #include <assert.h>
 #include <stdio.h>
+#include <math.h>
+
 
 int find_first_bar(int* height, int heightSize) {
     for (int i = 0; i < heightSize; i++) {
+        if (height[i] > 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int find_last_bar(int* height, int heightSize) {
+    for (int i = heightSize - 1; i >= 0; i--) {
         if (height[i] > 0) {
             return i;
         }
@@ -56,8 +68,41 @@ int trap1(int* height, int heightSize) {
 }
 
 
-int trap2(int* height, int heightSize) {
 
+int trap2(int* height, int heightSize) {
+    if (heightSize <= 2) {
+        return 0;
+    }
+    int start_i = find_first_bar(height, heightSize);
+    int end_i = find_last_bar(height, heightSize);
+    if (start_i == -1 || end_i == -1 || start_i >= end_i) {
+        return 0;
+    }
+
+    int l_max = height[start_i];
+    int r_max = height[end_i]; 
+    int rainwater = 0;
+    int curr_i = 0;
+
+    while (abs(start_i - end_i) > 1) {
+        if (height[start_i] <= height[end_i]) {
+            curr_i = ++start_i;
+            if (height[curr_i] >= l_max) {
+                l_max = height[curr_i];
+            } else {
+                rainwater += fmin(l_max, r_max) - height[curr_i];
+            }
+        } else {
+            curr_i = --end_i;
+            if (height[curr_i] >= r_max) {
+                r_max = height[curr_i];
+            } else {
+                rainwater += fmin(l_max, r_max) - height[curr_i];
+            }
+        }
+    }  
+
+    return rainwater;
 }
 
 int trap(int* height, int heightSize) {
@@ -75,11 +120,27 @@ int main() {
     
 
     int case1[] = {0,1,0,2,1,0,1,3,2,1,2,1};
-    assert(trap(case1, sizeof(case1)/sizeof(case1[0])) == 6);
+    res = trap(case1, sizeof(case1)/sizeof(case1[0]));
+    printf("case1 result trap(case1, %i): %i\n", sizeof(case1)/sizeof(case1[0]), res);
+    assert(res == 6);
 
     int case2[] = {4,2,0,3,2,5};
-    assert(trap(case2, sizeof(case2)/sizeof(case2[0])) == 9);
+    res = trap(case2, sizeof(case2)/sizeof(case2[0]));
+    printf("case2 result trap(case2, %i): %i\n", sizeof(case2)/sizeof(case2[0]), res);
+    assert(res == 9);
 
     int case3[] = {4,9, 0,3,2,10,};
-    assert(trap(case3, sizeof(case3)/sizeof(case3[0])) == 22);
+    res = trap(case3, sizeof(case3)/sizeof(case3[0]));
+    printf("case3 result trap(case3, %i): %i\n", sizeof(case3)/sizeof(case3[0]), res);
+    assert(res == 22);
+
+    int case4[] = {0};
+    assert(trap(case4, sizeof(case4)/sizeof(case4[0])) == 0);
+    
+    int case5[] = {0, 90};
+    assert(trap(case5, sizeof(case5)/sizeof(case5[0])) == 0);
+
+    int case6[] = {0,0,0};
+    assert(trap(case6, sizeof(case6)/sizeof(case6[0])) == 0);
+
 }
