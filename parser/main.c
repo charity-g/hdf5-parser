@@ -62,25 +62,136 @@ static void read_file_byte_by_byte(const char *path)
 }
 
 
+static int test_file_fread()
+{
+    const char *filename = "test1.txt";
+    FILE * fp1 = fopen(filename, "r");
+    if (fp1 != NULL) {
+        if (remove(filename) != 0) {
+            perror("Error: Unable to delete the file.\n");
+            return 1;
+        }
+    }
+    fclose(fp1);
+
+
+    fp1 = fopen(filename, "w+");
+    fprintf(fp1, "12345678");
+    
+    //EOF line reached
+        // size = 1, count = 9 text file length = 8, buffer = 10 
+        // size = 5; count = 2, text file length = 8, buffer = 10 
+    fseek(fp1, 0, SEEK_SET);
+    char buffer[11];
+    fread(buffer, sizeof(char), 9, fp1);
+    // expect buffer to be "12345678"
+    buffer[10] = '\0'; 
+    printf("Buffer: %s\n", buffer);
+
+    fseek(fp1, 0, SEEK_SET);
+    char buffer1[11];
+    fread(buffer1, 5, 2, fp1);
+    // expect buffer to be "12345678"
+    buffer1[10] = '\0';
+    printf("Buffer: %s\n", buffer1);
+
+    // working exact
+        // size = 1, count = 8 text file length = 8, buffer = 10 
+        // size = 4; count = 2, text file length = 8, buffer = 10 
+
+    fseek(fp1, 0, SEEK_SET);
+    char buffer2[10];
+    fread(buffer2, 1, 8, fp1);
+    // expect buffer to be "12345678"
+    buffer2[8] = '\0';
+    printf("Buffer: %s\n", buffer2);
+
+    fseek(fp1, 0, SEEK_SET);
+    char buffer3[10];
+    fread(buffer3, 4, 2, fp1);
+    // expect buffer to be "12345678"
+    buffer3[8] = '\0';
+    printf("Buffer: %s\n", buffer3);
+
+    // buffer overflow - UNSAFE!!!
+    // size = 1, count = 8 text file length = 8, buffer = 6
+    // size = 4; count = 2, text file length = 8, buffer = 6   
+
+    fseek(fp1, 0, SEEK_SET);
+    char buffer4[6];
+    fread(buffer4, 1, 8, fp1);
+    // expect buffer to be "12345678"
+    // buffer4[8] = '\0';
+    printf("Buffer: %s\n", buffer4);
+
+
+    fseek(fp1, 0, SEEK_SET);
+    char buffer5[6];
+    fread(buffer5, 4, 2, fp1);
+    // expect buffer to be "12345678"
+    // buffer5[6] = '\0';
+    printf("Buffer: %s\n", buffer5);
+    return 0;
+}
+
 static void read_file_fread(const char *path)
 {
+    FILE * fp = safe_fopen(path);
+    char buffer[64];
 
-    //TODO
+    size_t bytesRead = fread(buffer, sizeof(char), sizeof(buffer) - 1, fp);
+    if (bytesRead < 0) {
+        perror_debug("read_file_fread", "fread failed");
+        fclose(fp);
+        return; 
+    }
+
+    buffer[bytesRead] = '\0'; // Null-terminate the buffer
+    printf("Buffer: %s\n", buffer);
+    printf("Bytes read: %zu\n", bytesRead);
 }
 
 
+static void read_file_fscanf_s(const char *path)
+{   
+    FILE * fp = safe_fopen(path);
+    char buffer[64];
+    int number;
 
-static void read_file_fscans(const char *path)
-{
+    int i = fscanf_s(fp, "%s %d", buffer, sizeof(buffer), &number);
+    printf("matched items: %i\n", i);
+    if (i == 2) {
+        printf("Buffer: %s, Number: %d\n", buffer, number);
+    } else {
+        printf("Failed to read both string and number. Items matched: %i\n", i);
+    }
 
-    //TODO
+    fclose(fp);
+
+}
+
+
+static void read_file_fscanf(const char *path)
+{   
+    FILE * fp = safe_fopen(path);
+    char buffer[64];
+    int number;
+
+    int i = fscanf(fp, "%s %d", buffer, &number);
+    printf("matched items: %i\n", i);
+    if (i == 2) {
+        printf("Buffer: %s, Number: %d\n", buffer, number);
+    } else {
+        printf("Failed to read both string and number. Items matched: %i\n", i);
+    }
+
+    fclose(fp);
 }
 
 
 static void read_file_fgetc(const char *path)
 {
     FILE * fp = safe_fopen(path);
-    char buffer[64];
     
     int res = fgetc(fp);
     while (res > 0) {
@@ -88,6 +199,7 @@ static void read_file_fgetc(const char *path)
         printf("%c \n", res);
         res = fgetc(fp);
     }
+    fclose(fp);
 }
 
 static void read_file_fgets(const char *path)
@@ -114,6 +226,11 @@ int main(int argc, char *argv[])
     
     // read_file_fgets(argv[1]);
     // read_file_fgetc(argv[1]);
+    // read_file_fscanf(argv[1]);
+    // read_file_fscanf_s(argv[1]);
+    read_file_fread(argv[1]);
+    test_file_fread();
+
     // read_file_byte_by_byte(argv[1]);
     return EXIT_SUCCESS;
 }
