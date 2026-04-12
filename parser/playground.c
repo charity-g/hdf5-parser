@@ -1,7 +1,9 @@
+//  preprocessor directives = anything with hash
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <ctype.h>
+#include <string.h>
 #include <errno.h> // Include errno for error handling
 
 static void perror_debug(const char * function, const char *msg)
@@ -29,6 +31,12 @@ static FILE * safe_fopen(const char * path)
 
 // =================================
 
+static void read_entire_hdf5_file_bytes(const char *path)
+{
+    FILE *fp = fopen(path, "rb");
+    //
+}
+
 static void read_file_utf8(const char *path)
 {
 
@@ -41,24 +49,51 @@ static void read_file_ascii(const char *path)
     //TODO
 }
 
-static void read_file_per_hex(const char *path)
+static void read_file_per_byte(const char *path)
 {
-
-    //TODO
-}
-
-static void read_file_byte_by_byte(const char *path)
-{
-    FILE *fp = fopen(path, "rb");
+    FILE * fp = fopen(path, "rb");
     if (fp == NULL) {
-        perror_debug("read_file_byte_by_byte", "fopen failed");
+        perror_debug("read_file_per_byte", "fopen failed");
         return;
     }
 
-// TODO
+    int byte = fgetc(fp);
+    int byteCount = 0;
+    while (byte != EOF) {
+        byteCount++;
+        printf("%02X ", byte);
+        byte = fgetc(fp);
+    }
 
-
+    printf("\nTotal bytes read: %d\n", byteCount);
     fclose(fp);
+}
+
+static void test_char_vs_btye() {
+    char c[128] = "Hello, world!";  // Multibyte string
+    printf("String: %s\n", c);
+    
+    char *s = "\u20AC1.23";
+
+    printf("%s\n", s);  // €1.23
+    for (int j = 0; j < strlen(s); j++) {
+        printf("Byte %d: %02X, ", j, (unsigned char)s[j]);
+    }
+    printf("\n");
+    printf("%zu\n", strlen(s));  // 7!
+
+    printf("%x\n", '€');
+    printf("%x\n", '\u20ac');
+}
+
+static void test_pre_post_increment()
+{
+    int k = 0;
+    int i = 5;
+    printf("k: %d\n", k + i++);
+    k = 0;
+    i = 5;
+    printf("k: %d\n", k + ++i);
 }
 
 
@@ -228,9 +263,11 @@ int main(int argc, char *argv[])
     // read_file_fgetc(argv[1]);
     // read_file_fscanf(argv[1]);
     // read_file_fscanf_s(argv[1]);
-    read_file_fread(argv[1]);
-    test_file_fread();
+    // read_file_fread(argv[1]);
+    // test_file_fread();
 
-    // read_file_byte_by_byte(argv[1]);
+    // test_pre_post_increment();
+    // test_char_vs_btye();
+    read_file_per_byte(argv[1]);
     return EXIT_SUCCESS;
 }
