@@ -46,6 +46,8 @@ ascii + utf8
 - On-the-fly figure out if file is ascii or utf-8 encoded
 - Read dynamically
 
+`gcc -o parser main.c errorUtils.c errorUtils.h`
+
 ### SUBGOAL 2
 
 MVP of HDF5 parser:
