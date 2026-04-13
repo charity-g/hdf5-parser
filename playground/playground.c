@@ -94,6 +94,17 @@ static void test_pre_post_increment()
     k = 0;
     i = 5;
     printf("k: %d\n", k + ++i);
+
+    
+    char * input3 = "0.12345";
+    // char str[10];    
+    char * string = "aaaaaaaaa";
+    i = 0;
+    string[i] = input3[i++];
+    int j = 3;
+    string[i++] = input3[i]; 
+
+    printf("str: %s, %d, %d\n", string, i, j);
 }
 
 
@@ -266,8 +277,8 @@ int main(int argc, char *argv[])
     // read_file_fread(argv[1]);
     // test_file_fread();
 
-    // test_pre_post_increment();
+    test_pre_post_increment();
     // test_char_vs_btye();
-    read_file_per_byte(argv[1]);
+    // read_file_per_byte(argv[1]);
     return EXIT_SUCCESS;
 }
