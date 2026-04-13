@@ -21,6 +21,12 @@ def generate_minimal_hdf5_with_group():
         g = f.create_group("group")
         g.create_dataset("dset", data=[1,2,3])
 
+
+def read_minimal_hdf5():
+    with h5py.File("minimal.h5", "r") as f:
+        data = f["dset"][:]
+        print("Data read from minimal.h5:", data)
+
 if __name__ == "__main__":
     generate_minimal_hdf5_with_group()
-    
+    read_minimal_hdf5()

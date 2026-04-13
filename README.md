@@ -4,6 +4,7 @@ HDF5 is a recursive file format, used to compress and organize large amounts of 
 
 ## Goals:
 
+- Following Beej's guide: https://beej.us/guide/bgc/html/
 - Learn the structure of HDF5 file formats
 - Handle Parse both UTF-8 and ASCII 
 - Use the C language in a recursive manner to parse HDF5
@@ -47,6 +48,7 @@ ascii + utf8
 - Read dynamically
 
 `gcc -o parser main.c errorUtils.c errorUtils.h`
+`gcc -g playground.c -o playground.exe`
 
 ### SUBGOAL 2
 
