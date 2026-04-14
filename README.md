@@ -76,3 +76,8 @@ How to run the C code for parsing:
     - `gcc main.c -o main`
 - Run compiled object file with command line argument
 
+
+# Learning C
+https://pynative.com/c-programming-exercises/
+- basic https://pynative.com/c-programming-exercises-for-beginners/
+
