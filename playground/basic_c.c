@@ -41,9 +41,7 @@ int float_input_output()
     for (i = 0; i < 4 && input3[i] != '\0'; i++) {  
             num3[i] = input3[i];
     }
-    // num3[i] = input3[i];  // Copy the decimal point
-    // num3[i] = input3[i];  // Copy the first decimal digit
-    // num3[i] = input3[i];  // Copy the 2nd   decimal digit
+    
     num3[++i] = '\0';  // Null-terminate the string
     printf("Formatted number: %s\n", num3);
 
