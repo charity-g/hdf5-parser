@@ -12,32 +12,45 @@ You may assume that you have an infinite number of each kind of coin.
 #include <assert.h>
 #include <stdio.h>
 #include <math.h>
+#include "mysort.h"
 
-void sort(const int *a, const int len) {
-    //TODO sort in-place ascending
-}
 
-void filter_above(int *a, const int len, const int threshold) {
-    //TODO filter in-place, remove elements above threshold
+/**
+ *  Filter in-place, remove elements above threshold.
+ *  Returns the new length of the array after filtering. 
+ *  IMPORTANT: It is the job of the caller to clear out the remaining elements above the new length, if necessary. 
+ */
+int filter_above(int *a, const int len, const int threshold) {
+    int i = 0;
+    for (int j = 0; j < len; j++) {
+        if (a[j] <= threshold) {
+            a[i++] = a[j];
+        }
+    }
+    return i;
 }
 
 int coinChangeHelperSorted(int* coins, int coinsSize, int amount) {
-    sort(coins, coinsSize); 
+    coinsSize = filter_above(coins, coinsSize, amount);
+    mysort(coins, coinsSize); 
+
     int dp[amount + 1];
-    int coin;
     dp[0] = 0;  // Base case: 0 coins needed to make amount 0
+    int coin;
+    int remainder;
 
     for (int i = 1; i <= amount; i++) {
         dp[i] = -1;
         for (int j = 0; j < coinsSize; j++) {
             coin = coins[j];
-            if coin  {
-                //coin and above
-                break;
-            }
+            if (coin > i) break;
+            remainder = i - coin;
+            if (remainder < 0) continue;
+            if (dp[remainder] <= -1) continue;
+            dp[i] = dp[i] < 0? dp[remainder] + 1: fmin(dp[i], dp[remainder] + 1);
         }
     }
-    return TODO
+    return dp[amount];
 }
 
 
