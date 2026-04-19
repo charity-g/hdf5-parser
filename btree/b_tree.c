@@ -12,22 +12,37 @@
     - A non-leaf node with k children contains k−1 keys.
 */
 
-struct BTree {
-    struct BTreeRoot * root;
+//DECLARATIONS
+
+typedef struct {
+    BTreeNode * root;
     short int m;
     int height;
-};
+} BTree;
 
+typedef struct {
+    int key;
 
-int search(struct BTree * root, int key) {
+    int value;
+} BTreeNode;
+
+BTree * create_btree() {
+    BTree * btree = alloc(sizeof(BTree));
+    BTreeNode * root = alloc(sizeof(BTreeNode));
+    btree->root = root;
+    btree->m = 5;
+    btree->height = 0;
+}
+
+int search(BTree * root, int key) {
     // TODO
 }
 
-int insert(struct BTree * root, int key, int value) {
+int insert(BTree * root, int key, int value) {
     // TODO
 }
 
-int delete(struct BTree * root, int key) {
+int delete(BTree * root, int key) {
     // TODO
 }
 
@@ -35,39 +50,34 @@ int delete(struct BTree * root, int key) {
 // ==================================================================================================================
 // PRIVATE functions
 
-struct BTreeNode {
-    int key;
 
-    int value;
-};
-
-int search(struct BTreeNode * root, int key) {
+int search(BTreeNode * root, int key) {
     // TODO
 }
 
-int insert(struct BTreeNode * root, int key, int value) {
+int insert(BTreeNode * root, int key, int value) {
     // TODO
 }
 
-int delete(struct BTreeNode * root, int key) {
+int delete(BTreeNode * root, int key) {
     // TODO
 }
 
 // ==================================================================================================================
 // ITERATION
 
-struct BTreeIterator {
-    // struct BTreeNode * root; // needed?
-    struct BTreeNode * curr;
-};
+typedef struct {
+    // BTreeNode * root; // needed?
+    BTreeNode * curr;
+} BTreeIterator;
 
 
-struct BTreeIterator * create_iterator(struct BTree * btree) {
+BTreeIterator * create_iterator(BTree * btree) {
     // TODO
 }
 
 // returns leaf nodes?? or leaf values?? TODO
-// int or null get_iterator_next(struct BTreeIterator * iter) {
+// int or null get_iterator_next(BTreeIterator * iter) {
 //     // TODO
 // }
 
