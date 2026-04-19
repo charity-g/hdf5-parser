@@ -36,11 +36,17 @@ BTree * create_btree() {
     btree->height = 0;
 }
 
+
+void destruct_btree(BTree * btree){
+    free(btree->root); //TODO free all nodes inside.
+    free(btree);
+}
+
 int search(BTree * btree, int key) {
     // TODO
 }
 
-int insert(BTree * rbtrbtreeeeoot, int key, int value) {
+int insert(BTree * btree, int key, int value) {
     // TODO
 }
 
@@ -49,8 +55,9 @@ int delete(BTree * btree, int key) {
 }
 
 void print_btree(BTree * btree) {
-    printf("Root: %lf, m: %i, height: %i", btree->root, btree->m, btree->height);
+    printf("Root: %p, m: %i, height: %i", btree->root, btree->m, btree->height);
 }
+
 
 
 // ==================================================================================================================

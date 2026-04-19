@@ -7,7 +7,7 @@ void initialization() {
     print_btree(btree);
 
 
-    free(btree);
+    destruct_btree(btree);
 }
 
 int main(int argc, char *argv[])
