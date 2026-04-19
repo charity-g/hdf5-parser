@@ -58,8 +58,13 @@ MVP of HDF5 parser:
 - Read object headers, attributes etc
 - Navigate file system
 
+### SUBGOAL 3
 
-### SUBGOAL 2
+- purely theoretical level of separatin between disk and memory
+    - implement b tree
+    - implement b+ tree
+- actually using disk and memory
+    - understanding file streams, and allocation of memory
 
 ## Developer
 
