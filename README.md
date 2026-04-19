@@ -61,10 +61,15 @@ MVP of HDF5 parser:
 ### SUBGOAL 3
 
 - purely theoretical level of separatin between disk and memory
-    - implement b tree
+    - implement 5-ary b tree
+    - implement m-ary b tree
     - implement b+ tree
 - actually using disk and memory
     - understanding file streams, and allocation of memory
+
+#### B-TREE
+
+* B-tree is a self-balancing tree data structure that maintains sorted data and allows searches, sequential access, insertions, and deletions in logarithmic time
 
 ## Developer
 
