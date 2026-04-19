@@ -1,4 +1,5 @@
-
+#include <stdlib.h>
+#include <stdio.h>
 
 /** 
 * B-tree is a self-balancing tree data structure that maintains sorted data 
@@ -14,36 +15,41 @@
 
 //DECLARATIONS
 
+
+typedef struct {
+    int key;
+    int value;
+} BTreeNode;
+
 typedef struct {
     BTreeNode * root;
     short int m;
     int height;
 } BTree;
 
-typedef struct {
-    int key;
-
-    int value;
-} BTreeNode;
 
 BTree * create_btree() {
-    BTree * btree = alloc(sizeof(BTree));
-    BTreeNode * root = alloc(sizeof(BTreeNode));
+    BTree * btree = (BTree *) malloc(sizeof(BTree));
+    BTreeNode * root = (BTreeNode *) malloc(sizeof(BTreeNode));
     btree->root = root;
     btree->m = 5;
     btree->height = 0;
 }
 
-int search(BTree * root, int key) {
+int search(BTree * btree, int key) {
     // TODO
 }
 
-int insert(BTree * root, int key, int value) {
+int insert(BTree * rbtrbtreeeeoot, int key, int value) {
     // TODO
 }
 
-int delete(BTree * root, int key) {
+int delete(BTree * btree, int key) {
     // TODO
+}
+
+void print_btree(BTree * btree) {
+    printf("Root: %lf, m: %i, height: %i", btree->root, btree->m, btree->height);
 }
 
 
@@ -51,17 +57,17 @@ int delete(BTree * root, int key) {
 // PRIVATE functions
 
 
-int search(BTreeNode * root, int key) {
-    // TODO
-}
+// int search(BTreeNode * root, int key) {
+//     // TODO
+// }
 
-int insert(BTreeNode * root, int key, int value) {
-    // TODO
-}
+// int insert(BTreeNode * root, int key, int value) {
+//     // TODO
+// }
 
-int delete(BTreeNode * root, int key) {
-    // TODO
-}
+// int delete(BTreeNode * root, int key) {
+//     // TODO
+// }
 
 // ==================================================================================================================
 // ITERATION
