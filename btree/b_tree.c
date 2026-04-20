@@ -76,9 +76,10 @@ BTreeNode * get_closest_leaf(BTree * btree, int key) {
     return curr; // guaranteed curr->is_leaf since init starts as true
 }
 
-int * search(BTree * btree, int key) {
-    BTreeNode * leaf = get_closest_leaf(btree, key);
-    //invariant: After this line curr->is_leaf
+int * search_helper(BTree * btree, int key, BTreeNode * leaf) {
+    if (leaf == NULL) {
+        leaf = get_closest_leaf(btree, key);
+    }
     for (int i = 0; i < (leaf->capacity); ++i) {
         if (leaf->leaf_keys[i] == key) {
             return leaf->values[i];
@@ -87,14 +88,30 @@ int * search(BTree * btree, int key) {
     return NULL;
 }
 
+int * search(BTree * btree, int key) {
+    return search_helper(btree, key, NULL);
+}
+
 int insert(BTree * btree, int key, int value) {
-    int * target = search(btree, key);
+    BTreeNode * leaf = get_closest_leaf(btree, key);
+    int * target = search_helper(btree, key, leaf);
     if (target != NULL) {
         *target = value; 
         return;
     }
 
-    // search for parent of the closest leaf
+    //use leaf
+    if (leaf->capacity >= btree->m) {
+        // SPLIT TODO  
+    } else {
+        leaf->capacity++;
+        //TODO
+        // add to keys, add to values at end
+        // sort values by keys
+        // sort keys
+        //isn't O(n) just better for insert and move since m just inserting one
+        // TRUE could just iterate and shift right
+    }
 
 }
 
