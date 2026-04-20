@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "stb_ds.h"
 
 /** 
 * B-tree is a self-balancing tree data structure that maintains sorted data 
@@ -16,9 +17,16 @@
 //DECLARATIONS
 
 
-typedef struct {
-    int key;
-    int value;
+// note: because m is not stored, this node is nonsense when not tied to btree object
+typedef struct BTreeNode {
+    short int is_leaf;
+    short int capacity;
+    int keys[4];
+
+    union {
+        int *values[5];              // for leaf
+        struct BTreeNode *children[5]; // for internal nodes
+    };
 } BTreeNode;
 
 typedef struct {
@@ -31,6 +39,8 @@ typedef struct {
 BTree * create_btree() {
     BTree * btree = (BTree *) malloc(sizeof(BTree));
     BTreeNode * root = (BTreeNode *) malloc(sizeof(BTreeNode));
+    root->is_leaf = 1;
+    root->capacity = 0;
     btree->root = root;
     btree->m = 5;
     btree->height = 0;
@@ -38,12 +48,21 @@ BTree * create_btree() {
 
 
 void destruct_btree(BTree * btree){
-    free(btree->root); //TODO free all nodes inside.
+     //TODO free all nodes inside recursively via bfs and queue
+    free(btree->root->values);
+    free(btree->root);
     free(btree);
 }
 
 int search(BTree * btree, int key) {
-    // TODO
+    BTreeNode **queue = NULL;
+    arrput(queue, btree->root);
+    while (arrlen(queue) > 0) {
+        BTreeNode * curr = ;
+    
+    }
+    arrfree(queue);
+    return nothing found/?
 }
 
 int insert(BTree * btree, int key, int value) {
