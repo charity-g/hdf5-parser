@@ -76,10 +76,7 @@ BTreeNode * get_closest_leaf(BTree * btree, int key) {
     return curr; // guaranteed curr->is_leaf since init starts as true
 }
 
-int * search_helper(BTree * btree, int key, BTreeNode * leaf) {
-    if (leaf == NULL) {
-        leaf = get_closest_leaf(btree, key);
-    }
+int * search_helper(BTreeNode * leaf, int key) {
     for (int i = 0; i < (leaf->capacity); ++i) {
         if (leaf->leaf_keys[i] == key) {
             return leaf->values[i];
@@ -89,20 +86,69 @@ int * search_helper(BTree * btree, int key, BTreeNode * leaf) {
 }
 
 int * search(BTree * btree, int key) {
-    return search_helper(btree, key, NULL);
+    BTreeNode * leaf = get_closest_leaf(btree, key);
+    return search_helper(leaf, key);
 }
 
-int insert(BTree * btree, int key, int value) {
+int * insert(BTree * btree, int key, int value) {
+    // return the int * to value
+    return insert_recursive(btree, btree->root, key, value);
+}
+
+struct insert_return {
+    BTreeNode * left;
+    BTreeNode * right;
+    int split_key;
+};
+
+struct insert_return * insert_recursive(BTree * btree, BTreeNode * curr, int key, int value) {
+    if (curr->is_leaf) {
+        int * target = search_helper(curr, key);
+        if (target != NULL) {
+            *target = value; 
+            return NULL;
+        }
+        
+        if (curr->capacity >= btree->m) {
+            // SPLIT TODO  
+            // how do we back propagate to parents? need to make recursive
+        } else {
+            curr->capacity++;
+            //TODO
+            // add to keys, add to values at end
+            // sort values by keys
+            // sort keys
+            //isn't O(n) just better for insert and move since m just inserting one
+            // TRUE could just iterate and shift right
+            return NULL;
+        }
+
+    } else {
+        // we are a parent, need to propogate result downstream, then pick it back upstream
+        //find ideal road to go down to:
+        BTreeNode * next = NULL; //TODO 
+        struct insert_return * res = insert_recursive(btree, next, key, value);
+        if (res == NULL) {
+            return NULL;
+        } else {
+            // figure out if split needs to continue...
+            return NULL; //TODO FIX TO ACTUAL
+        }
+    }
+}
+
+int * insert_nonrecursive(BTree * btree, int key, int value) {
     BTreeNode * leaf = get_closest_leaf(btree, key);
-    int * target = search_helper(btree, key, leaf);
+    int * target = search_helper(leaf, key);
     if (target != NULL) {
         *target = value; 
-        return;
+        return target;
     }
 
     //use leaf
     if (leaf->capacity >= btree->m) {
         // SPLIT TODO  
+        // how do we back propagate to parents? need to make recursive
     } else {
         leaf->capacity++;
         //TODO
