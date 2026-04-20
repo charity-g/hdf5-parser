@@ -20,11 +20,13 @@
 // note: because m is not stored, this node is nonsense when not tied to btree object
 typedef struct BTreeNode {
     short int is_leaf;
-    short int capacity;
-    int keys[4];
-
+    short int capacity; //describes # of values, will always have more than one except in root
     union {
-        int *values[5];              // for leaf
+        int leaf_keys[5]; //for leaf
+        int keys[4];      //for internal 
+    };
+    union {
+        int *values[5];                // for leaf
         struct BTreeNode *children[5]; // for internal nodes
     };
 } BTreeNode;
@@ -49,20 +51,35 @@ BTree * create_btree() {
 
 void destruct_btree(BTree * btree){
      //TODO free all nodes inside recursively via bfs and queue
+    BTreeNode ** stack = NULL; //TODO change to efficient queue 
+    arrput(stack, btree->root);
     free(btree->root->values);
+    arrfree(stack);
     free(btree->root);
     free(btree);
 }
 
-int search(BTree * btree, int key) {
-    BTreeNode **queue = NULL;
-    arrput(queue, btree->root);
-    while (arrlen(queue) > 0) {
-        BTreeNode * curr = ;
-    
+int * search(BTree * btree, int key) {
+    BTreeNode *curr = btree->root;
+    while (curr && !curr->is_leaf) {
+        if (curr->capacity <= 0) { return NULL; }; 
+        for (int i = 0; i < (curr->capacity - 1); ++i) {
+            if (key < curr->keys[i]) {
+                curr = curr->children[i];
+                break;
+            }
+        }
+        if (key > curr->keys[(curr->capacity - 1)]) {
+            curr = curr->children[(curr->capacity)];
+        }
     }
-    arrfree(queue);
-    return nothing found/?
+    //invariant: After this line curr->is_leaf
+    for (int i = 0; i < (curr->capacity); ++i) {
+        if (curr->leaf_keys[i] == key) {
+            return curr->values[i];
+        }
+    } 
+    return NULL;
 }
 
 int insert(BTree * btree, int key, int value) {
