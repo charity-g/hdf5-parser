@@ -59,7 +59,7 @@ void destruct_btree(BTree * btree){
     free(btree);
 }
 
-int * search(BTree * btree, int key) {
+BTreeNode * get_closest_leaf(BTree * btree, int key) {
     BTreeNode *curr = btree->root;
     while (curr && !curr->is_leaf) {
         if (curr->capacity <= 0) { return NULL; }; 
@@ -73,17 +73,29 @@ int * search(BTree * btree, int key) {
             curr = curr->children[(curr->capacity)];
         }
     }
+    return curr; // guaranteed curr->is_leaf since init starts as true
+}
+
+int * search(BTree * btree, int key) {
+    BTreeNode * leaf = get_closest_leaf(btree, key);
     //invariant: After this line curr->is_leaf
-    for (int i = 0; i < (curr->capacity); ++i) {
-        if (curr->leaf_keys[i] == key) {
-            return curr->values[i];
+    for (int i = 0; i < (leaf->capacity); ++i) {
+        if (leaf->leaf_keys[i] == key) {
+            return leaf->values[i];
         }
     } 
     return NULL;
 }
 
 int insert(BTree * btree, int key, int value) {
-    // TODO
+    int * target = search(btree, key);
+    if (target != NULL) {
+        *target = value; 
+        return;
+    }
+
+    // search for parent of the closest leaf
+
 }
 
 int delete(BTree * btree, int key) {
