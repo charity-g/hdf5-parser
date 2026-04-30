@@ -12,6 +12,12 @@
     - The root node has at least two children unless it is a leaf.
     - All leaves appear on the same level.
     - A non-leaf node with k children contains k−1 keys.
+
+Internal Node Invariant
+    - given a key in internal node
+        - all keys in left child are larger than key
+        - all keys in right child are >= than key
+
 */
 
 //DECLARATIONS
@@ -34,7 +40,7 @@ typedef struct BTreeNode {
 typedef struct {
     BTreeNode * root;
     short int m;
-    int height;
+    int height; 
 } BTree;
 
 
@@ -62,7 +68,7 @@ void destruct_btree(BTree * btree){
 BTreeNode * get_closest_leaf(BTree * btree, int key) {
     BTreeNode *curr = btree->root;
     while (curr && !curr->is_leaf) {
-        if (curr->capacity <= 0) { return NULL; }; 
+        if (curr->capacity <= 0) { return NULL; }
         for (int i = 0; i < (curr->capacity - 1); ++i) {
             if (key < curr->keys[i]) {
                 curr = curr->children[i];
@@ -76,7 +82,8 @@ BTreeNode * get_closest_leaf(BTree * btree, int key) {
     return curr; // guaranteed curr->is_leaf since init starts as true
 }
 
-int * search_helper(BTreeNode * leaf, int key) {
+
+int * find_value_by_key(BTreeNode * leaf, int key) {
     for (int i = 0; i < (leaf->capacity); ++i) {
         if (leaf->leaf_keys[i] == key) {
             return leaf->values[i];
@@ -87,59 +94,63 @@ int * search_helper(BTreeNode * leaf, int key) {
 
 int * search(BTree * btree, int key) {
     BTreeNode * leaf = get_closest_leaf(btree, key);
-    return search_helper(leaf, key);
+    return find_value_by_key(leaf, key);
 }
 
-int * insert(BTree * btree, int key, int value) {
+void insert(BTree * btree, int key, int value) {
     // return the int * to value
-    return insert_recursive(btree, btree->root, key, value);
+    BTreeNode * right = insert_recursive(btree, btree->root, key, value);
+    if (right != NULL) {
+        // TODO  we need to reassign root push up!
+    }
 }
 
-struct insert_return {
-    BTreeNode * left;
-    BTreeNode * right;
-    int split_key;
-};
-
-struct insert_return * insert_recursive(BTree * btree, BTreeNode * curr, int key, int value) {
+/*
+** Returns NULL if there was no split in the child.
+*  Returns right pointer if there was a split. The left was modified.
+*/
+// TODO check for balanced?? it auto balances in insert since we always split top.
+BTreeNode * insert_recursive(BTree * btree, BTreeNode * curr, int key, int value) {
     if (curr->is_leaf) {
-        int * target = search_helper(curr, key);
-        if (target != NULL) {
-            *target = value; 
+        int * key_exists = find_value_by_key(curr, key);
+        if (key_exists != NULL) {
+            *key_exists = value; 
             return NULL;
         }
         
-        if (curr->capacity >= btree->m) {
-            // SPLIT TODO  
-            // how do we back propagate to parents? need to make recursive
+        if (curr->capacity >= btree->m) { //split
+            add_key_value_to_leaf_split(curr, key, value, btree->m);
         } else {
-            curr->capacity++;
-            //TODO
-            // add to keys, add to values at end
-            // sort values by keys
-            // sort keys
-            //isn't O(n) just better for insert and move since m just inserting one
-            // TRUE could just iterate and shift right
+            add_key_value_to_leaf(curr, key, value);   
             return NULL;
         }
 
     } else {
         // we are a parent, need to propogate result downstream, then pick it back upstream
         //find ideal road to go down to:
-        BTreeNode * next = NULL; //TODO 
-        struct insert_return * res = insert_recursive(btree, next, key, value);
-        if (res == NULL) {
+        BTreeNode * child = NULL; // TODO find target child
+        BTreeNode * right = insert_recursive(btree, child, key, value);
+        if (right == NULL) {
             return NULL;
+        }
+        if (curr->capacity >= btree->m) {
+            // split!
+            int keys[5];
+            BTreeNode * children[6];
+            BTreeNode * right = split_internal(curr, keys, children); 
+            return right;
         } else {
-            // figure out if split needs to continue...
-            return NULL; //TODO FIX TO ACTUAL
+            curr->capacity++;
+            // insert into it
         }
     }
 }
 
+
+
 int * insert_nonrecursive(BTree * btree, int key, int value) {
     BTreeNode * leaf = get_closest_leaf(btree, key);
-    int * target = search_helper(leaf, key);
+    int * target = find_value_by_key(leaf, key);
     if (target != NULL) {
         *target = value; 
         return target;
@@ -173,6 +184,65 @@ void print_btree(BTree * btree) {
 
 // ==================================================================================================================
 // PRIVATE functions
+
+int get_min_node_capacity(int m) {
+    return m % 2 == 0 ? m / 2 : (m / 2) + 1;
+}
+
+void add_key_value_to_leaf(BTreeNode * curr, int key, int value) {
+    int i;
+    for (i = 0; i < curr->capacity; ++i) {
+        if (key < curr->leaf_keys[i] ) { break; }
+    }
+
+    //shift everything up, starting from end to avoid temp var
+    for (int j = curr->capacity - 1; j >= i; --j) {
+        curr->leaf_keys[j+1] = curr->leaf_keys[j];
+        curr->values[j+1] = curr->values[j];
+    }
+    curr->leaf_keys[i] = key;
+    int * value_ptr = malloc(sizeof(int));
+    *value_ptr = value;
+    curr->values[i] = value_ptr;
+    curr->capacity++; 
+}
+
+
+BTreeNode * add_key_value_to_leaf_split(BTreeNode * left, int key, int value, int m) {
+    int min_cap = get_min_node_capacity(m);
+
+    BTreeNode * right = malloc(sizeof(BTreeNode));
+    right->is_leaf = 1;
+    right->capacity = min_cap;
+
+    int left_to_move_count = min_cap;
+    short int inserted_key = 0;
+    int i;
+    for (; left_to_move_count > 0; --left_to_move_count) {
+        i = left->capacity - left_to_move_count;
+        if (!inserted_key) --i;
+
+        if (key >= left->leaf_keys[i] && !inserted_key ) {
+            right->leaf_keys[left_to_move_count] = key;
+            int * value_ptr = malloc(sizeof(int));
+            *value_ptr = value;
+            right->values[left_to_move_count] = value_ptr;
+                
+            inserted_key++;
+        } else {
+            right->leaf_keys[left_to_move_count] = left->values[i];
+            right->values[left_to_move_count] = left->values[i];
+        }
+    }
+    
+    left->capacity = m % 2 == 0 ? min_cap + 1 : min_cap;
+    if (!inserted_key) {
+        add_key_value_to_leaf(left, key, value);
+    }
+
+    return right;
+}
+
 
 
 // int search(BTreeNode * root, int key) {
