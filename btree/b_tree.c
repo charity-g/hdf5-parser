@@ -15,7 +15,7 @@
 
 Internal Node Invariant
     - given a key in internal node
-        - all keys in left child are larger than key
+        - all keys in left child are < than key
         - all keys in right child are >= than key
 
 */
@@ -106,6 +106,20 @@ void insert(BTree * btree, int key, int value) {
 }
 
 /*
+* invariant: guaranteed curr->capacity > m/2
+*/
+BTreeNode * find_closest_child(BTree * btree, BTreeNode * curr, int key) {
+    int capacity = curr->capacity;
+    int i = 0;
+    for (; i < capacity; ++i) {
+        if (key < curr->keys[i]) {
+            break;  
+        } 
+    }
+    return curr->children[i];
+}
+
+/*
 ** Returns NULL if there was no split in the child.
 *  Returns right pointer if there was a split. The left was modified.
 */
@@ -128,7 +142,7 @@ BTreeNode * insert_recursive(BTree * btree, BTreeNode * curr, int key, int value
     } else {
         // we are a parent, need to propogate result downstream, then pick it back upstream
         //find ideal road to go down to:
-        BTreeNode * child = NULL; // TODO find target child
+        BTreeNode * child = find_closest_child(key, curr);
         BTreeNode * right = insert_recursive(btree, child, key, value);
         if (right == NULL) {
             return NULL;
