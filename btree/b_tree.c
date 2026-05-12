@@ -102,6 +102,12 @@ void insert(BTree * btree, int key, int value) {
     BTreeNode * right = insert_recursive(btree, btree->root, key, value);
     if (right != NULL) {
         // TODO  we need to reassign root push up!
+        if (btree->root->capacity >= btree->m) {
+            // split TODO
+            // reassign root;
+        } else {
+            // add right into root
+        }
     }
 }
 
@@ -154,10 +160,23 @@ BTreeNode * insert_recursive(BTree * btree, BTreeNode * curr, int key, int value
             BTreeNode * right = split_internal(curr, keys, children); 
             return right;
         } else {
+            int right_key = right->keys[0];
+            int capacity = curr->capacity;
+            int i = 0; int j = 0;
+            for (i = 0; i < capacity; ++i) {
+                if (right_key < curr->keys[i]) {
+                    break;
+                }
+            }
+            for (j = capacity; j >= i; --j) {
+                curr->keys[j+1] = curr->keys[j]; 
+                curr->children[j+2] = curr->children[j+1];
+            }
+            curr->keys[i] = right_key;
+            curr->children[i+1] = right; 
             curr->capacity++;
-            // insert into it
         }
-    }
+    
 }
 
 
@@ -231,7 +250,7 @@ BTreeNode * add_key_value_to_leaf_split(BTreeNode * left, int key, int value, in
 
     int left_to_move_count = min_cap;
     short int inserted_key = 0;
-    int i;
+    int i = 0; int j = 0;
     for (; left_to_move_count > 0; --left_to_move_count) {
         i = left->capacity - left_to_move_count;
         if (!inserted_key) --i;
